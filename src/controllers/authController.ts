@@ -1,6 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel";
+import { SECRET } from "../config";
+
 interface ReturnResponse {
   status: "success" | "error";
   message: String;
@@ -55,10 +58,11 @@ export const loginUser = async (
     if (!match) {
       return res.json({ msg: "Incorrect Credentials!" });
     }
+    const token = jwt.sign({ userId: doc._id }, SECRET!);
     resp = {
       status: "success",
       message: "login Successful",
-      data: doc,
+      data: { token },
     };
 
     res.json(resp);
