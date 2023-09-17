@@ -1,4 +1,16 @@
-import express,{Request,Response} from "express" ;
-export const registerUser=(req:Request,res:Response)=>{
-    res.send("hi registration is done and completed.")
-}
+import express, { Request, Response, NextFunction } from "express";
+export const getUser = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUser = (req: Request, res: Response, next: NextFunction) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+};
