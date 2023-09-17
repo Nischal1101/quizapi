@@ -1,5 +1,5 @@
 import express from "express";
-import * as userController from '../controllers/user';
+import {registerUser} from '../controllers/userController';
 const router=express.Router()
-router.route("/register").get(userController.registerUser)
+router.route("/register").get(registerUser)
 export default router;
