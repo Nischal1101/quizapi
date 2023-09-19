@@ -5,7 +5,7 @@ import userRoutes from "./routes/userRoutes";
 import { PORT} from "./config";
 import db from "./database/db";
 import error from "./middlewares/error";
-import logger from "./utils/logger";
+import logger from "./config/logger";
 
 process.on("uncaughtException",(ex:Error)=>{
     console.log("We got an uncaught exception")
@@ -49,9 +49,9 @@ app.use(error);
 db().then(()=>{
 
     app.listen(port,()=>{
-        console.log(`Server is listening at address ${port}`)
+        logger.info(`Server is listening at address ${port}`)
     })
 }
 ).catch((err)=>{
-    console.log(err+"Database connection failed")
+    logger.error(err+"Database connection failed")
 })
