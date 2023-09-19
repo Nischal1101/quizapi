@@ -1,6 +1,7 @@
 import express,{Request,Response,NextFunction} from "express";
 import authRoutes from "./routes/AuthRoutes";
 import userRoutes from "./routes/userRoutes";
+import winston from "winston";
 
 import { PORT} from "./config";
 import db from "./database/db";
@@ -9,7 +10,10 @@ import error from "./middlewares/error";
 const port:number=Number(PORT);
 const app=express();
 
-app.use(express.json())
+
+
+// winston.add(winston.transports.File,{filename:"logfile.log"})
+app.use(express.json()  )
 declare global{
     namespace Express{
         interface Request{
