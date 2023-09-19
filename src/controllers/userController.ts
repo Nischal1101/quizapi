@@ -1,6 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
+import  { Request, Response, NextFunction } from "express";
 import User from "../models/userModel";
-import { isDecorator } from "typescript";
 interface ReturnResponse {
   status: "error" | "success";
   message: String;

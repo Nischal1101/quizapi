@@ -1,18 +1,34 @@
 import express,{Request,Response,NextFunction} from "express";
 import authRoutes from "./routes/AuthRoutes";
 import userRoutes from "./routes/userRoutes";
-import winston from "winston";
 
 import { PORT} from "./config";
 import db from "./database/db";
 import error from "./middlewares/error";
+import logger from "./utils/logger";
 
+process.on("uncaughtException",(ex:Error)=>{
+    console.log("We got an uncaught exception")
+       logger.log({
+          level: 'error',
+          message: ex.message
+        });
+        process.exit(1);
+        })
+process.on("unhandledRejection",(ex:Error)=>{
+    console.log("We got an unhandled rejection");
+    logger.log({
+        level:'error',
+        message:ex.message
+    })
+    process.exit(1);
+})
+        // throw new Error("Something failed during startup")
 const port:number=Number(PORT);
 const app=express();
 
 
 
-// winston.add(winston.transports.File,{filename:"logfile.log"})
 app.use(express.json()  )
 declare global{
     namespace Express{
