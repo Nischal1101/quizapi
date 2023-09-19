@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import  { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel";
@@ -9,13 +9,15 @@ interface ReturnResponse {
   message: String;
   data: {};
 }
-export const registerUser = async (
+
+ 
+export async function registerUser(
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+) 
+ {
   let resp: ReturnResponse;
-  try {
     const { name, email, password } = req.body;
     const hashedpw = await bcrypt.hash(password, 12);
     const doc = await User.create({ name, email, password: hashedpw });
@@ -31,24 +33,17 @@ export const registerUser = async (
       message: " registration is done and completed.",
       data: doc,
     };
+   
     res.send(resp);
-  } catch (error) {
-    resp = {
-      status: "error",
-      message: "error",
-      data: {},
-    };
-    next(error);
-  }
-};
+ 
+}
 
-export const loginUser = async (
+
+export async function loginUser (
   req: Request,
   res: Response,
-  next: NextFunction
-) => {
+)  {
   let resp: ReturnResponse;
-  try {
     const { email, password } = req.body;
     const doc = await User.findOne({ email });
     if (!doc) {
@@ -66,12 +61,6 @@ export const loginUser = async (
     };
 
     res.json(resp);
-  } catch (error) {
-    resp = {
-      status: "error",
-      message: "error" + error,
-      data: {},
-    };
-    next(error);
+ 
   }
-};
+

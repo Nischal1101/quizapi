@@ -14,7 +14,7 @@ export const getUser = async (
   let resp: ReturnResponse;
   try {
     const { userId } = req.params;
-    const doc = await User.findOne({ _id: userId });
+    const doc = await User.findOne({ _id: userId }).select("-password");
     if (!doc) {
       return res.json({ msg: "No user found!" });
     }
