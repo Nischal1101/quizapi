@@ -42,12 +42,13 @@ app.use("/user",userRoutes);
 
 
 
-app.get("/",(req:Request,res:Response)=>{
-    res.send("hello this is working");
+app.get("/",(req:Request,res:Response,next:NextFunction)=>{
+  const err=  new Error("not working");
+  return next(err)
+    // res.send("hello this is working");
 })
-app.use(error);
 db().then(()=>{
-
+    
     app.listen(port,()=>{
         logger.info(`Server is listening at address ${port}`)
     })
@@ -55,3 +56,4 @@ db().then(()=>{
 ).catch((err)=>{
     logger.error(err+"Database connection failed")
 })
+app.use(error);

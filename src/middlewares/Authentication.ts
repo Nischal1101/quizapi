@@ -1,3 +1,4 @@
+import createError from "http-errors";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../config";
@@ -16,15 +17,17 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
     console.log(decodedtoken)
     // decodedtoken={userId:"kjfdd"};
   } catch (error) {
-    next("User not authorized.");
+    const err= createError(401,"User not authorized.");
+   return next(err);
   }
   if (!decodedtoken) {
-    return res.json({ msg: "User not authorized." });
+    const err= createError(401,"User not authorized.");
+   return next(err);
   }
   req.userId = decodedtoken.userId;
   next();
   } catch (error) {
-   console.log(error)
+   next(error)
   }
 };
 export default auth;

@@ -1,5 +1,6 @@
 import  { Request, Response, NextFunction } from "express";
 import User from "../models/userModel";
+import createError from 'http-errors';
 interface ReturnResponse {
   status: "error" | "success";
   message: String;
@@ -11,11 +12,13 @@ export const getUser = async (
   next: NextFunction
 ) => {
   let resp: ReturnResponse;
-  try {
     const { userId } = req.params;
     const doc = await User.findOne({ _id: userId }).select("-password");
     if (!doc) {
-      return res.json({ msg: "No user found!" });
+      // return res.json({ msg: "No user found!" });
+      const err = createError(404,"No user found!");
+      return next(err);
+
     }
     resp = {
       status: "success",
@@ -23,10 +26,8 @@ export const getUser = async (
       data: doc,
     };
     res.send(resp);
-  } catch (error) {
-    next(error);
-  }
-};
+  
+}
 
 export const updateUser = async (
   req: Request,
@@ -34,14 +35,15 @@ export const updateUser = async (
   next: NextFunction
 ) => {
   let resp: ReturnResponse;
-  try {
     const { userId } = req.params;
 
     const doc = await User.findOneAndUpdate({ _id: userId }, req.body, {
       new: true,
     });
     if (!doc) {
-      return res.json({ msg: "No user found!" });
+      // return res.json({ msg: "No user found!" });
+      const err=createError(404,"No user found!")
+      return next(err);
     }
     resp = {
       status: "success",
@@ -49,7 +51,4 @@ export const updateUser = async (
       data: doc,
     };
     res.send(resp);
-  } catch (error) {
-    next(error);
-  }
 };
