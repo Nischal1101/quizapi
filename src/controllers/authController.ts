@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel";
 import { SECRET } from "../config";
-import createError from "http-errors";
+import CustomErrorHandler from "../utils/CustomErrorHandler";
+// import createError from "http-errors";
 
 interface ReturnResponse {
   status: "success" | "error";
@@ -21,7 +22,7 @@ export async function registerUser(
   const hashedpw = await bcrypt.hash(password, 12);
   const doc = await User.create({ name, email, password: hashedpw });
   if (!doc) {
-    const err = createError(404, "user not found");
+    const err = new CustomErrorHandler(404, "user not found");
     next(err);
   }
 
@@ -43,12 +44,12 @@ export async function loginUser(
   const { email, password } = req.body;
   const doc = await User.findOne({ email });
   if (!doc) {
-    const err = createError(404, "user not found");
+    const err = new CustomErrorHandler(404, "user not found");
     return next(err);
   }
   const match = await bcrypt.compare(password, doc!.password);
   if (!match) {
-    const err = createError(404, "user not found");
+    const err = new CustomErrorHandler(404, "user not found");
     return next(err);
   }
   const token = jwt.sign({ userId: doc!._id }, SECRET!);
