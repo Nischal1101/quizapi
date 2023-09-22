@@ -23,6 +23,6 @@ router.route("/").put(auth, asyncErrorHandler(updateQuiz));
 router.route("/:quizid").delete(auth, asyncErrorHandler(deleteQuiz));
 
 //publish
-router.route("/publish").patch(auth, asyncErrorHandler(publishQuiz));
+router.route("/publish/:quizid").patch(auth, asyncErrorHandler(publishQuiz));
 
 export default router;
