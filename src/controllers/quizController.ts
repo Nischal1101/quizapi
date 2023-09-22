@@ -24,11 +24,13 @@ export const createQuiz = async (
   if (!quiz) {
     const err = new CustomErrorHandler(404, "Quiz Not found!!");
     return next(err);
-    }
+  }
   resp = {
     status: "success",
     message: "Quiz successfully created",
-    data: quiz,
+    data: {
+      quizid: quiz._id,
+    },
   };
   return res.status(201).json(resp);
 };
