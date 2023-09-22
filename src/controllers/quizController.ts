@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import Quiz from "../models/quizModel";
+import CustomErrorHandler from "../utils/CustomErrorHandler";
 
 interface ReturnResponse {
   status: "error" | "success";
@@ -20,6 +21,10 @@ export const createQuiz = async (
     answers,
     created_by: req.userId,
   });
+  if (!quiz) {
+    const err = new CustomErrorHandler(404, "Quiz Not found!!");
+    return next(err);
+    }
   resp = {
     status: "success",
     message: "Quiz successfully created",
