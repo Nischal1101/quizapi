@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/userModel";
 import { SECRET } from "../config";
 import CustomErrorHandler from "../utils/CustomErrorHandler";
+import Joi from "joi";
 // import createError from "http-errors";
 
 interface ReturnResponse {
@@ -17,13 +18,25 @@ export async function registerUser(
   res: Response,
   next: NextFunction
 ) {
-  let resp: ReturnResponse;
   const { name, email, password } = req.body;
+  const schema = Joi.object({
+    name: Joi.string().min(4).trim().max(15).required(),
+    email: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+      .required(),
+    password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) {
+    const err = new CustomErrorHandler(422, error.message);
+    return next(err); 
+  }
+  let resp: ReturnResponse;
   const hashedpw = await bcrypt.hash(password, 12);
   const doc = await User.create({ name, email, password: hashedpw });
   if (!doc) {
     const err = new CustomErrorHandler(404, "user not found");
-    next(err);
+    return next(err);
   }
 
   resp = {
