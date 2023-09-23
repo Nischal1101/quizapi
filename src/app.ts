@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import authRoutes from "./routes/AuthRoutes";
 import userRoutes from "./routes/userRoutes";
 import quizRoutes from "./routes/quizRoutes";
+import examRoutes from "./routes/examRoutes";
 
 import { PORT } from "./config";
 import db from "./database/db";
@@ -40,6 +41,7 @@ declare global {
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/quiz", quizRoutes);
+app.use("/exam", examRoutes);
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   const err = new CustomErrorHandler(500, "not working server error.");

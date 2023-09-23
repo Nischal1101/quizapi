@@ -17,7 +17,7 @@ router.route("/").post(auth, asyncErrorHandler(createQuiz));
 router.route("/:quizid").get(auth, asyncErrorHandler(getQuiz));
 
 //update quiz
-router.route("/").put(auth, asyncErrorHandler(updateQuiz));
+router.route("/:quizid").put(auth, asyncErrorHandler(updateQuiz));
 
 //delete
 router.route("/:quizid").delete(auth, asyncErrorHandler(deleteQuiz));

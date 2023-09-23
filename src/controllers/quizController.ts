@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import Quiz from "../models/quizModel";
 import CustomErrorHandler from "../utils/CustomErrorHandler";
-
+import Validate from "../utils/Validator";
 interface ReturnResponse {
   status: "error" | "success";
   message: String;
@@ -14,22 +14,28 @@ export const createQuiz = async (
   next: NextFunction
 ) => {
   let resp: ReturnResponse;
+  const { error } = Validate(req.body);
+  if (error) {
+    return next(error);
+  }
   const { name, questions_list, answers } = req.body;
-  const quiz = await Quiz.create({
+
+  const doc = await Quiz.create({
     name,
     questions_list,
     answers,
     created_by: req.userId,
   });
-  if (!quiz) {
+  if (!doc) {
     const err = new CustomErrorHandler(404, "Quiz Not found!!");
     return next(err);
   }
+
   resp = {
     status: "success",
     message: "Quiz successfully created",
     data: {
-      quizid: quiz._id,
+      quizid: doc._id,
     },
   };
   return res.status(201).json(resp);
@@ -41,6 +47,11 @@ export const getQuiz = async (
   next: NextFunction
 ) => {
   let resp: ReturnResponse;
+  const authorized = await Quiz.findOne({ created_by: req.userId });
+  if (!authorized) {
+    const err = new CustomErrorHandler(403, "user is not authorized");
+    return next(err);
+  }
 
   const doc = await Quiz.findById(req.params.quizid).select("-created_by");
   if (!doc) {
@@ -61,7 +72,19 @@ export const updateQuiz = async (
   next: NextFunction
 ) => {
   let resp: ReturnResponse;
-  const { quizid } = req.body;
+  const authorized = await Quiz.findOne({ created_by: req.userId });
+  if (!authorized) {
+    const err = new CustomErrorHandler(403, "user is not authorized");
+    return next(err);
+  }
+  if (authorized.is_published) {
+    const err = new CustomErrorHandler(
+      405,
+      "Updation not allowed for published quiz"
+    );
+    return next(err);
+  }
+  const { quizid } = req.params;
   const doc = await Quiz.findOneAndUpdate({ _id: quizid }, req.body, {
     new: true,
   });
@@ -84,6 +107,19 @@ export const deleteQuiz = async (
 ) => {
   let resp: ReturnResponse;
   const { quizid } = req.params;
+
+  const authorized = await Quiz.findOne({ created_by: req.userId });
+  if (!authorized) {
+    const err = new CustomErrorHandler(403, "user is not authorized");
+    return next(err);
+  }
+  if (authorized.is_published) {
+    const err = new CustomErrorHandler(
+      405,
+      "Deletion not allowed for published quiz"
+    );
+    return next(err);
+  }
   await Quiz.findByIdAndDelete(quizid);
   resp = {
     status: "success",
@@ -99,6 +135,11 @@ export const publishQuiz = async (
   next: NextFunction
 ) => {
   let resp: ReturnResponse;
+  const authorized = await Quiz.findOne({ created_by: req.userId });
+  if (!authorized) {
+    const err = new CustomErrorHandler(403, "user is not authorized");
+    return next(err);
+  }
   const { quizid } = req.params;
   const doc = await Quiz.findById(quizid);
   if (!doc) {

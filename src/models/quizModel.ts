@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const quiSchema = new mongoose.Schema(
+const quizSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -26,5 +26,5 @@ const quiSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-const Quiz = mongoose.model("Quiz", quiSchema);
+const Quiz = mongoose.model("Quiz", quizSchema);
 export default Quiz;

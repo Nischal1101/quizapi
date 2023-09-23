@@ -5,7 +5,6 @@ import { NODE_PROD } from "../config";
 import CustomErrorHandler from "../utils/CustomErrorHandler";
 
 const node_prod: boolean = NODE_PROD === "true";
-console.log(node_prod);
 
 const error = (
   err: CustomErrorHandler,
