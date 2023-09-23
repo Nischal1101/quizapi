@@ -65,19 +65,16 @@ export const submitExam = async (
 
   for (let i = 0; i < total; i++) {
     let question_number = all_questions[i];
-    if (
-      
-      answers[question_number] == attempted_question[question_number]
-    ) {
+    if (answers[question_number] == attempted_question[question_number]) {
       score++;
     }
   }
 
-  const result = await Exam.create({ total, score, quizid, userId });
+  const report = await Exam.create({ total, score, quizid, userId });
   resp = {
     status: "success",
     message: "Successfully got answers",
-    data: { total, score, examId: result._id },
+    data: { total, score, reportId: report._id },
   };
   return res.status(201).json(resp);
 };

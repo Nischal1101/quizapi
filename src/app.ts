@@ -3,6 +3,7 @@ import authRoutes from "./routes/AuthRoutes";
 import userRoutes from "./routes/userRoutes";
 import quizRoutes from "./routes/quizRoutes";
 import examRoutes from "./routes/examRoutes";
+import reportRoutes from "./routes/reportRoutes";
 
 import { PORT } from "./config";
 import db from "./database/db";
@@ -42,12 +43,13 @@ app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/quiz", quizRoutes);
 app.use("/exam", examRoutes);
+app.use("/report", reportRoutes);
 
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
-  const err = new CustomErrorHandler(500, "not working server error.");
-  return next(err);
-  // res.send("hello this is working");
+app.all("*", (req: Request, res: Response, next: NextFunction) => {
+  const err = new CustomErrorHandler(404, `${req.originalUrl} doesn't exist.`);
+  next(err);
 });
+
 db()
   .then(() => {
     app.listen(port, () => {
