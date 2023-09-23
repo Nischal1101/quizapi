@@ -5,13 +5,8 @@ import User from "../models/userModel";
 import { SECRET } from "../config";
 import CustomErrorHandler from "../utils/CustomErrorHandler";
 import Joi from "joi";
+import ReturnResponse from "../utils/Interface";
 // import createError from "http-errors";
-
-interface ReturnResponse {
-  status: "success" | "error";
-  message: String;
-  data: {};
-}
 
 export async function registerUser(
   req: Request,
@@ -29,7 +24,7 @@ export async function registerUser(
   const { error } = schema.validate(req.body);
   if (error) {
     const err = new CustomErrorHandler(422, error.message);
-    return next(err); 
+    return next(err);
   }
   let resp: ReturnResponse;
   const hashedpw = await bcrypt.hash(password, 12);

@@ -2,11 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import Quiz from "../models/quizModel";
 import CustomErrorHandler from "../utils/CustomErrorHandler";
 import Validate from "../utils/Validator";
-interface ReturnResponse {
-  status: "error" | "success";
-  message: String;
-  data: {};
-}
+import ReturnResponse from "../utils/Interface";
 
 export const createQuiz = async (
   req: Request,

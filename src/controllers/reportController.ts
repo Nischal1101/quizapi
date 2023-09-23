@@ -1,12 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import Exam from "../models/examModel";
 import CustomErrorHandler from "../utils/CustomErrorHandler";
+import ReturnResponse from "../utils/Interface";
 
-interface ReturnResponse {
-  status: "error" | "success";
-  message: String;
-  data: {};
-}
 
 export const getReport = async (
   req: Request,

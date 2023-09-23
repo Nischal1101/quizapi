@@ -3,12 +3,8 @@ import CustomErrorHandler from "../utils/CustomErrorHandler";
 
 import Quiz from "../models/quizModel";
 import Exam from "../models/examModel";
+import ReturnResponse from "../utils/Interface";
 
-interface ReturnResponse {
-  status: "error" | "success";
-  message: String;
-  data: {};
-}
 
 export const attemptExam = async (
   req: Request,
