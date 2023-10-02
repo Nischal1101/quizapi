@@ -4,7 +4,9 @@ import userRoutes from "./routes/userRoutes";
 import quizRoutes from "./routes/quizRoutes";
 import examRoutes from "./routes/examRoutes";
 import reportRoutes from "./routes/reportRoutes";
+import adminRoutes from "./routes/AdminRoutes";
 
+import cors from "cors";
 import { PORT } from "./config";
 import db from "./database/db";
 import error from "./middlewares/error";
@@ -32,10 +34,12 @@ const port: number = Number(PORT);
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 declare global {
   namespace Express {
     interface Request {
       userId: string;
+      user_role: string;
     }
   }
 }
@@ -44,6 +48,7 @@ app.use("/user", userRoutes);
 app.use("/quiz", quizRoutes);
 app.use("/exam", examRoutes);
 app.use("/report", reportRoutes);
+app.use("/admin", adminRoutes);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
   const err = new CustomErrorHandler(404, `${req.originalUrl} doesn't exist.`);

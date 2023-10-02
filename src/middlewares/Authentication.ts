@@ -10,11 +10,13 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
       return res.json({ msg: "NO authorization header found!" });
     }
     const token = header.split(" ")[1];
-    let decodedtoken: { userId: string } | null = null;
+    let decodedtoken: {
+      user_role: string; userId: string 
+} | null = null;
     try {
       decodedtoken = <any>jwt.verify(token, SECRET!);
       console.log(decodedtoken);
-      // decodedtoken={userId:"kjfdd"};
+    
     } catch (error) {
       const err = new CustomErrorHandler(401, "User not authorized.");
       return next(err);
@@ -23,7 +25,8 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
       const err = new CustomErrorHandler(401, "User not authorized.");
       return next(err);
     }
-    req.userId = decodedtoken.userId;
+    req.userId = decodedtoken.userId
+    req.user_role=decodedtoken.user_role;
     next();
   } catch (error) {
     next(error);

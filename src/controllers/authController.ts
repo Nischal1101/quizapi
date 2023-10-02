@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel";
@@ -7,6 +8,14 @@ import CustomErrorHandler from "../utils/CustomErrorHandler";
 import Joi from "joi";
 import ReturnResponse from "../utils/Interface";
 // import createError from "http-errors";
+
+interface IDoc {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  password: string;
+  user_role?: string;
+}
 
 export async function registerUser(
   req: Request,
@@ -28,7 +37,7 @@ export async function registerUser(
   }
   let resp: ReturnResponse;
   const hashedpw = await bcrypt.hash(password, 12);
-  const doc = await User.create({ name, email, password: hashedpw });
+  const doc: IDoc = await User.create({ name, email, password: hashedpw });
   if (!doc) {
     const err = new CustomErrorHandler(404, "user not found");
     return next(err);
@@ -50,20 +59,62 @@ export async function loginUser(
 ) {
   let resp: ReturnResponse;
   const { email, password } = req.body;
-  const doc = await User.findOne({ email });
+  const doc: IDoc | null = await User.findOne({ email });
   if (!doc) {
     const err = new CustomErrorHandler(404, "user not found");
     return next(err);
+  }
+  if (doc.user_role === "admin") {
+    const err = new CustomErrorHandler(403, "Access denied");
+    next(err);
   }
   const match = await bcrypt.compare(password, doc!.password);
   if (!match) {
     const err = new CustomErrorHandler(404, "user not found");
     return next(err);
   }
-  const token = jwt.sign({ userId: doc!._id }, SECRET!);
+
+  const token = jwt.sign(
+    { userId: doc._id, user_role: doc.user_role },
+    SECRET!
+  );
   resp = {
     status: "success",
-    message: "login Successful",
+    message: "User login Successful",
+    data: { token },
+  };
+  res.json(resp);
+}
+
+export async function adminLogin(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  let resp: ReturnResponse;
+  const { email, password } = req.body;
+  const doc: IDoc | null = await User.findOne({ email });
+  if (!doc) {
+    const err = new CustomErrorHandler(404, "user not found");
+    return next(err);
+  }
+  if (doc.user_role === "user") {
+    const err = new CustomErrorHandler(403, "Access denied");
+    next(err);
+  }
+  const match = await bcrypt.compare(password, doc!.password);
+  if (!match) {
+    const err = new CustomErrorHandler(404, "user not found");
+    return next(err);
+  }
+
+  const token = jwt.sign(
+    { userId: doc._id, user_role: doc.user_role },
+    SECRET!
+  );
+  resp = {
+    status: "success",
+    message: "Admin login Successful",
     data: { token },
   };
   res.json(resp);
